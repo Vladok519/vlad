@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Гурток програмування</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #abffeb; /* змінений основний колір */
+      color: #e0ffff; /* бірюзовий відтінок тексту */
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    h1 {
+      font-size: 3em;
+      margin-bottom: 40px;
+    }
+
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      background-color: #40e0d0; /* бірюзовий */
+      border: none;
+      color: #fff;
+      padding: 15px 30px;
+      font-size: 1.2em;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #30c4b0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Гурток програмування</h1>
+  <div class="button-container">
+    <button class="btn" onclick="window.open('https://flipanim.com', '_blank')">FlipAnim</button>
+    <button class="btn" onclick="window.open('https://scratch.mit.edu', '_blank')">Scratch</button>
+    <button class="btn" onclick="window.location.href='create-user.html'">Додати нового учасника</button>
+  </div>
+</body>
+</html>
