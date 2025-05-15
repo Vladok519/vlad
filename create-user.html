@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Список бібізяк</title>
+  <style>
+    /* Фон з відтінком блакитного і жовтого */
+    body {
+      background-color: rgba(160, 247, 252, 1); /* Відтінок блакитного з жовтим */
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+      margin: 0;
+      transition: background-color 0.3s ease;
+    }
+
+    /* Поля для вводу жовтого кольору */
+    input {
+      background-color: #FFFB6D; /* Легкий жовтий відтінок */
+      border: 2px solid #ccc;
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 5px;
+      outline: none;
+      width: 250px;
+    }
+
+    /* Кнопки */
+    button {
+      padding: 10px 15px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      border-radius: 5px;
+      margin: 10px;
+      color: white;
+      font-weight: bold;
+      transition: background 0.3s ease;
+      background: linear-gradient(to right, #808080, #B84D61); /* Сіро-буро малиновий */
+    }
+
+    button:hover {
+      background: linear-gradient(to right, #00BFFF, #FF4500); /* Голубий червоний */
+    }
+
+    /* Кнопка палітри */
+    .color-picker-btn {
+      background-color: white;
+      border: 2px solid #ccc;
+      padding: 10px 15px;
+      color: black;
+      font-weight: normal;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .color-picker-btn:hover {
+      background-color: #f0f0f0;
+    }
+
+    /* Список */
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      font-size: 18px;
+      padding: 10px;
+      background-color: #fff;
+      margin: 5px auto;
+      border-radius: 5px;
+      width: fit-content;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #FF8C00; /* Оранжевий для заголовка */
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    .delete-btn {
+      background-color: #FF6347; /* Червоний для видалення */
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #FF4500;
+    }
+
+    /* Стилі для кіл */
+    .circle {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 255, 0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: white;
+      font-size: 14px;
+      pointer-events: none;
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Список бібізяк</h1>
+
+  <label for="first-name">Ім'я:</label><br>
+  <input type="text" id="first-name" placeholder="Введіть ім'я"><br>
+
+  <label for="last-name">Прізвище:</label><br>
+  <input type="text" id="last-name" placeholder="Введіть прізвище"><br>
+
+  <label for="patronymic">По батькові (не обов'язково):</label><br>
+  <input type="text" id="patronymic" placeholder="Введіть по батькові"><br>
+
+  <button onclick="addBibizyaky()">Додати бібізяку</button>
+
+  <h2>Бібізяки:</h2>
+  <ul id="bibizyaky-list"></ul>
+
+  <button onclick="downloadBibizyaky()">Завантажити список</button>
+  <button onclick="startGame()">Почати гру</button>
+
+  <!-- Кнопка для вибору кольору фону -->
+  <button class="color-picker-btn" onclick="openColorPicker()">Вибрати колір фону</button>
+  <input type="color" id="color-picker" style="display:none;" onchange="changeBackgroundColor(event)">
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/10.11.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyARFTZA3k1BMxTvJTd0eoHJAojAinV_GNg",
+    authDomain: "ababudha-da907.firebaseapp.com",
+    projectId: "ababudha-da907",
+    storageBucket: "ababudha-da907.appspot.com",
+    messagingSenderId: "1037654564612",
+    appId: "1:1037654564612:web:21659b2e1a575a082a3a51",
+    measurementId: "G-TP5Z4ZMC52"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  // === FIRESTORE FUNCTIONS ===
+
+  async function addBibizyaky() {
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName = document.getElementById('last-name').value.trim();
+    const patronymic = document.getElementById('patronymic').value.trim();
+
+    if (firstName && lastName) {
+      const fullName = patronymic ? `${firstName} ${lastName} ${patronymic}` : `${firstName} ${lastName}`;
+      await addDoc(collection(db, "bibizyaky"), { name: fullName });
+
+      document.getElementById('first-name').value = '';
+      document.getElementById('last-name').value = '';
+      document.getElementById('patronymic').value = '';
+
+      displayBibizyakyList();
+    } else {
+      alert("Будь ласка, заповніть хоча б ім'я та прізвище!");
+    }
+  }
+
+  async function displayBibizyakyList() {
+    const list = document.getElementById('bibizyaky-list');
+    list.innerHTML = '';
+
+    const querySnapshot = await getDocs(collection(db, "bibizyaky"));
+    querySnapshot.forEach((docSnapshot) => {
+      const name = docSnapshot.data().name;
+      const id = docSnapshot.id;
+
+      const listItem = document.createElement('li');
+      listItem.innerHTML = `
+        <span>${name}</span>
+        <button class="delete-btn" onclick="removeBibizyaka('${id}')">Видалити</button>
+      `;
+      list.appendChild(listItem);
+    });
+  }
+
+  async function removeBibizyaka(id) {
+    await deleteDoc(doc(db, "bibizyaky", id));
+    displayBibizyakyList();
+  }
+
+  async function downloadBibizyaky() {
+    const querySnapshot = await getDocs(collection(db, "bibizyaky"));
+    const names = [];
+    querySnapshot.forEach(doc => names.push(doc.data().name));
+
+    const blob = new Blob([names.join('\n')], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'bibizyaky.txt';
+    link.click();
+  }
+
+  // Додати функції у глобальний простір, щоб працювали кнопки
+  window.addBibizyaky = addBibizyaky;
+  window.displayBibizyakyList = displayBibizyakyList;
+  window.removeBibizyaka = removeBibizyaka;
+  window.downloadBibizyaky = downloadBibizyaky;
+
+  // Завантажити список після ініціалізації
+  displayBibizyakyList();
+</script>
+
+
+</body>
+</html>
